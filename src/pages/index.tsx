@@ -38,10 +38,10 @@ const Home: NextPage = () => {
   return (
     <>
       <Head>
-        <title>Blockchain Rock Paper Scissors</title>
+        <title>Core Testnet Rock Paper Scissors</title>
         <meta
           name='description'
-          content='Challenge players worldwide in the ultimate game of strategy'
+          content='Challenge players worldwide in the ultimate game of strategy on Core Testnet'
         />
         <meta name='viewport' content='width=device-width, initial-scale=1' />
         <link rel='icon' href='/favicon.ico' />
@@ -52,11 +52,11 @@ const Home: NextPage = () => {
           <div className='text-center space-y-4'>
             <h1 className='text-4xl font-bold text-white'>
               <span className='bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-purple-500'>
-                BATTLE OF ELEMENTS
+                CORE TESTNET BATTLE ARENA
               </span>
             </h1>
             <p className='text-gray-300 text-lg'>
-              Challenge opponents in the ultimate Rock-Paper-Scissors arena on Core Network!
+              Challenge opponents in the ultimate Rock-Paper-Scissors arena on Core Testnet!
             </p>
           </div>
 
@@ -66,7 +66,7 @@ const Home: NextPage = () => {
               <div className='flex justify-between items-center mb-3'>
                 <h2 className='text-lg font-semibold text-white flex items-center'>
                   <Wallet className='w-5 h-5 mr-2 text-blue-400' />
-                  Your Wallet
+                  Your Testnet Wallet
                 </h2>
                 <div className='text-xs px-2 py-1 rounded-full bg-blue-900/50 text-blue-400'>
                   Civic Auth
@@ -143,7 +143,7 @@ const Home: NextPage = () => {
 
           {/* Additional Info */}
           <div className='text-center text-gray-400 text-sm'>
-            <p>Powered by Core Network | Battle with ⚔️ on the blockchain</p>
+            <p>Powered by Core Testnet | Battle with ⚔️ on the blockchain</p>
           </div>
         </div>
       </div>

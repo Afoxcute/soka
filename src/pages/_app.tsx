@@ -15,7 +15,7 @@ import { chains, transports } from "../wagmi";
 // Create a client for tanstack/react-query
 const queryClient = new QueryClient();
 
-// Create wagmi config with Civic Auth embedded wallet
+// Create wagmi config with Civic Auth embedded wallet for Core Testnet
 const wagmiConfig = createConfig({
   chains,
   transports,

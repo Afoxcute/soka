@@ -1,9 +1,8 @@
 import { http } from 'wagmi';
-import { coreDao } from "wagmi/chains";
 import type { Chain } from 'wagmi/chains';
 
 // Define Core Testnet chain
-const coreTestnet = {
+const coreTestnet: Chain = {
   id: 1115,
   name: 'Core Testnet',
   nativeCurrency: { 
@@ -31,13 +30,12 @@ const coreTestnet = {
       blockCreated: 11_907_934,
     },
   },
-} as const satisfies Chain;
+};
 
-// Export both chains for wagmi configuration
-export const chains = [coreDao, coreTestnet] as const;
+// Export only Core Testnet chain for wagmi configuration
+export const chains = [coreTestnet] as const;
 
-// Export transports for both chains
+// Export transport for Core Testnet
 export const transports = {
-  [coreDao.id]: http('https://rpc.ankr.com/core'),
   [coreTestnet.id]: http('https://rpc.test.btcs.network'),
 };
