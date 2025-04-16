@@ -11,14 +11,13 @@ import { embeddedWallet } from "@civic/auth-web3/wagmi";
 
 import Layout from "../components/Layout";
 import { chains, transports } from "../wagmi";
-import { coreDao } from "wagmi/chains";
 
 // Create a client for tanstack/react-query
 const queryClient = new QueryClient();
 
 // Create wagmi config with Civic Auth embedded wallet
 const wagmiConfig = createConfig({
-  chains: [coreDao],
+  chains,
   transports,
   connectors: [
     embeddedWallet(),

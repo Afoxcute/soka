@@ -38,6 +38,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const { 
     chainId, 
     isMainnet,
+    isTestnet,
     networkName, 
     networkClass, 
     tokenSymbol, 
@@ -54,20 +55,20 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   useEffect(() => {
     // Only run in browser environment
     if (isMounted && chainId) {
-      if (isMainnet) {
+      if (isMainnet || isTestnet) {
         toast.success(`Connected to ${networkName} (${tokenSymbol})`, {
           icon: '🌐',
           id: 'network-change',
         });
       } else {
-        toast.error(`Connected to unsupported network. Please switch to Core Mainnet.`, {
+        toast.error(`Connected to unsupported network. Please switch to Core Mainnet or Core Testnet.`, {
           icon: '⚠️',
           id: 'network-change',
           duration: 5000,
         });
       }
     }
-  }, [chainId, networkName, isMounted, isMainnet, tokenSymbol]);
+  }, [chainId, networkName, isMounted, isMainnet, isTestnet, tokenSymbol]);
 
   // Create wallet for new users
   const createWallet = async () => {
