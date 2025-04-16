@@ -38,6 +38,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const router = useRouter();
   const { 
     chainId, 
+    isMainnet,
     isTestnet,
     networkName, 
     networkClass, 
@@ -55,20 +56,20 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   useEffect(() => {
     // Only run in browser environment
     if (isMounted && chainId) {
-      if (isTestnet) {
+      if (isMainnet || isTestnet) {
         toast.success(`Connected to ${networkName} (${tokenSymbol})`, {
           icon: '🌐',
           id: 'network-change',
         });
       } else {
-        toast.error(`Connected to unsupported network. Please switch to Core Testnet.`, {
+        toast.error(`Connected to unsupported network. Please switch to Core Mainnet or Core Testnet.`, {
           icon: '⚠️',
           id: 'network-change',
           duration: 5000,
         });
       }
     }
-  }, [chainId, networkName, isMounted, isTestnet, tokenSymbol]);
+  }, [chainId, networkName, isMounted, isMainnet, isTestnet, tokenSymbol]);
 
   // Create wallet for new users
   const createWallet = async () => {
@@ -103,7 +104,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               height={40}
               className='mr-2 animate-pulse hover:animate-spin'
             />
-            <span className="text-gradient font-bold text-lg">CORE TESTNET BATTLE ARENA</span>
+            <span className="text-gradient font-bold text-lg">CORE BATTLE ARENA</span>
           </div>
           <div className="flex items-center gap-3">
             {isMounted && isConnected && (
