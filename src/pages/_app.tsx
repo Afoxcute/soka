@@ -29,7 +29,7 @@ function MyApp({ Component, pageProps }: AppProps) {
   return (
     <QueryClientProvider client={queryClient}>
       <WagmiProvider config={wagmiConfig}>
-        <CivicAuthProvider clientId="YOUR_CIVIC_CLIENT_ID">
+        <CivicAuthProvider clientId="3fb12e4d-dde9-48d3-b510-62783dae555a">
           <Toaster position='top-right' reverseOrder={false} />
           <Layout>
             <Component {...pageProps} />
