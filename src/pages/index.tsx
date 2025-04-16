@@ -1,19 +1,39 @@
 'use client';
 
 import type { NextPage } from "next";
-import { useAccount, useConnect } from 'wagmi';
+import { useAccount, useConnect, useBalance } from 'wagmi';
 import { userHasWallet } from '@civic/auth-web3';
 import { UserButton, useUser } from '@civic/auth-web3/react';
 import { useNetworkInfo } from '../hooks/useNetworkInfo';
 
 import Link from "next/link";
-import { Gamepad2, Wallet, Sword, ScrollText, Shield, Coins, Trophy, Users } from 'lucide-react';
+import { Gamepad2, Wallet, Sword, Copy, Shield, Coins, Trophy, Users } from 'lucide-react';
 import Head from "next/head";
 
 const Home: NextPage = () => {
     const { isConnected } = useAccount();
     const userContext = useUser();
     const { tokenSymbol } = useNetworkInfo();
+
+    // Get the address from Civic wallet
+    const address = userHasWallet(userContext) 
+      ? userContext.ethereum.address
+      : undefined;
+    
+    // Get balance using wagmi hook
+    const { data: balance, isLoading } = useBalance({ 
+      address
+    });
+
+    const formatAddress = (addr: string) => {
+      return `${addr.slice(0, 6)}...${addr.slice(-4)}`;
+    };
+
+    const copyAddress = () => {
+      if (address) {
+        navigator.clipboard.writeText(address);
+      }
+    };
 
   return (
     <>
@@ -39,6 +59,48 @@ const Home: NextPage = () => {
               Challenge opponents in the ultimate Rock-Paper-Scissors arena on Core Network!
             </p>
           </div>
+
+          {/* Display Wallet Info if connected */}
+          {isConnected && userHasWallet(userContext) && (
+            <div className='bg-gray-800 p-5 rounded-lg border border-gray-700 hover:border-blue-500 transition-all duration-300'>
+              <div className='flex justify-between items-center mb-3'>
+                <h2 className='text-lg font-semibold text-white flex items-center'>
+                  <Wallet className='w-5 h-5 mr-2 text-blue-400' />
+                  Your Wallet
+                </h2>
+                <div className='text-xs px-2 py-1 rounded-full bg-blue-900/50 text-blue-400'>
+                  Civic Auth
+                </div>
+              </div>
+              
+              <div className='space-y-3'>
+                <div className='flex justify-between items-center'>
+                  <span className='text-gray-400'>Address:</span>
+                  <div className='flex items-center gap-1'>
+                    <span className='text-gray-200 font-mono'>{address && formatAddress(address)}</span>
+                    <button onClick={copyAddress} className='p-1 text-gray-400 hover:text-white transition-colors'>
+                      <Copy className='w-3 h-3' />
+                    </button>
+                  </div>
+                </div>
+                
+                <div className='flex justify-between items-center'>
+                  <span className='text-gray-400'>Balance:</span>
+                  <div className='flex items-center'>
+                    {isLoading ? (
+                      <span className='text-gray-400'>Loading...</span>
+                    ) : balance ? (
+                      <span className='text-gray-200 font-medium'>
+                        {parseFloat((Number(balance.value) / 1e18).toString()).toFixed(4)} {tokenSymbol}
+                      </span>
+                    ) : (
+                      <span className='text-gray-400'>Unavailable</span>
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
 
           {/* Features */}
           <div className='grid grid-cols-1 md:grid-cols-2 gap-4'>

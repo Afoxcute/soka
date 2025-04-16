@@ -12,6 +12,7 @@ import { userHasWallet } from '@civic/auth-web3';
 import { useAutoConnect } from '@civic/auth-web3/wagmi';
 import { UserButton, useUser } from '@civic/auth-web3/react';
 import { useNetworkInfo } from '../hooks/useNetworkInfo';
+import WalletBalance from './WalletBalance';
 
 const NAV_ITEMS = [
   {
@@ -107,9 +108,12 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           </div>
           <div className="flex items-center gap-3">
             {isMounted && isConnected && (
-              <div className={`text-xs px-2 py-1 rounded-full ${networkClass}`}>
-                {networkName} ({tokenSymbol})
-              </div>
+              <>
+                <div className={`text-xs px-2 py-1 rounded-full ${networkClass}`}>
+                  {networkName}
+                </div>
+                <WalletBalance />
+              </>
             )}
             <UserButton />
           </div>
