@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useRouter } from 'next/router';
-import { Home, GamepadIcon, History } from 'lucide-react';
+import { Home, GamepadIcon, History, ExternalLink } from 'lucide-react';
 import { useAccount } from 'wagmi';
 import { toast } from 'react-hot-toast'; 
 import Image from 'next/image';
@@ -41,9 +41,11 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
     chainId, 
     isMainnet,
     isTestnet,
+    isSupportedNetwork,
     networkName, 
-    networkClass, 
-    tokenSymbol, 
+    networkClass,
+    tokenSymbol,
+    getAddressExplorerUrl,
     isMounted 
   } = useNetworkInfo();
   
@@ -57,7 +59,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   useEffect(() => {
     // Only run in browser environment
     if (isMounted && chainId) {
-      if (isMainnet || isTestnet) {
+      if (isSupportedNetwork) {
         toast.success(`Connected to ${networkName} (${tokenSymbol})`, {
           icon: '🌐',
           id: 'network-change',
@@ -70,13 +72,18 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
         });
       }
     }
-  }, [chainId, networkName, isMounted, isMainnet, isTestnet, tokenSymbol]);
+  }, [chainId, networkName, isMounted, isSupportedNetwork, tokenSymbol]);
 
   // Create wallet for new users
   const createWallet = async () => {
     if (userContext.user && !userHasWallet(userContext)) {
-      await userContext.createWallet();
-      toast.success('Wallet created successfully!');
+      try {
+        await userContext.createWallet();
+        toast.success('Wallet created successfully!');
+      } catch (error) {
+        console.error("Error creating wallet:", error);
+        toast.error('Failed to create wallet. Please try again.');
+      }
     }
   };
 
@@ -91,6 +98,11 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
       toast.error('Please connect your wallet to access this feature.');
     }
   };
+
+  // Get wallet address for explorer link
+  const walletAddress = userHasWallet(userContext)
+    ? userContext.ethereum.address
+    : undefined;
 
   return (
     <div className='flex flex-col min-h-screen bg-gray-800'>
@@ -112,6 +124,17 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               <>
                 <NetworkSwitcher />
                 <WalletBalance />
+                {walletAddress && (
+                  <a 
+                    href={getAddressExplorerUrl(walletAddress)} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-gray-400 hover:text-gray-300 transition-colors"
+                    title="View on Explorer"
+                  >
+                    <ExternalLink className="h-4 w-4" />
+                  </a>
+                )}
               </>
             )}
             <UserButton />

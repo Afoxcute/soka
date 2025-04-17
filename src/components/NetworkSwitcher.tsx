@@ -1,20 +1,28 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useChainId, useSwitchChain } from 'wagmi';
 import { coreDao } from 'wagmi/chains';
 import { useNetworkInfo } from '../hooks/useNetworkInfo';
-import { ArrowLeftRight, Check, ChevronDown } from 'lucide-react';
+import { ArrowLeftRight, Check, ChevronDown, Loader2 } from 'lucide-react';
 import { useUser } from '@civic/auth-web3/react';
 import { userHasWallet } from '@civic/auth-web3';
+import toast from 'react-hot-toast';
 
 // Core Testnet chain ID
 const CORE_TESTNET_CHAIN_ID = 1115;
 
 const NetworkSwitcher = () => {
   const [isOpen, setIsOpen] = useState(false);
+  const [isSwitching, setIsSwitching] = useState(false);
   const chainId = useChainId();
   const { networkName, networkClass } = useNetworkInfo();
   const { switchChain } = useSwitchChain();
   const userContext = useUser();
+
+  useEffect(() => {
+    // Close dropdown on chain change
+    setIsOpen(false);
+    setIsSwitching(false);
+  }, [chainId]);
 
   const networks = [
     {
@@ -22,31 +30,55 @@ const NetworkSwitcher = () => {
       name: 'Core Mainnet',
       icon: '🌐',
       className: 'bg-green-900/50 text-green-400 border-green-800',
+      rpcUrl: 'https://rpc.ankr.com/core',
     },
     {
       id: CORE_TESTNET_CHAIN_ID,
       name: 'Core Testnet',
       icon: '🧪',
       className: 'bg-blue-900/50 text-blue-400 border-blue-800',
+      rpcUrl: 'https://rpc.test.btcs.network',
     },
   ];
 
-  const handleNetworkSwitch = (networkId: number) => {
+  const handleNetworkSwitch = async (networkId: number) => {
     if (networkId === chainId) return;
     
     if (userContext.user && userHasWallet(userContext)) {
-      switchChain({ chainId: networkId });
-      setIsOpen(false);
+      try {
+        setIsSwitching(true);
+        await switchChain({ chainId: networkId });
+        
+        // Find the network details
+        const network = networks.find(n => n.id === networkId);
+        if (network) {
+          toast.success(`Switched to ${network.name}`);
+        }
+      } catch (error) {
+        console.error("Network switch failed:", error);
+        toast.error("Failed to switch network. Please try again.");
+        setIsSwitching(false);
+      }
+    } else {
+      toast.error("Please connect your wallet first");
     }
   };
+
+  // Find current network details
+  const currentNetwork = networks.find(n => n.id === chainId) || networks[0];
 
   return (
     <div className="relative">
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className={`flex items-center gap-2 rounded-lg px-3 py-1.5 ${networkClass} border border-opacity-30 hover:bg-opacity-80 transition-all duration-200`}
+        disabled={isSwitching}
+        className={`flex items-center gap-2 rounded-lg px-3 py-1.5 ${currentNetwork.className} border border-opacity-30 hover:bg-opacity-80 transition-all duration-200 ${isSwitching ? 'opacity-75 cursor-not-allowed' : ''}`}
       >
-        <ArrowLeftRight className="h-3.5 w-3.5" />
+        {isSwitching ? (
+          <Loader2 className="h-3.5 w-3.5 animate-spin" />
+        ) : (
+          <ArrowLeftRight className="h-3.5 w-3.5" />
+        )}
         <span className="text-xs font-medium">{networkName}</span>
         <ChevronDown className={`h-3.5 w-3.5 transition-transform duration-200 ${isOpen ? 'rotate-180' : ''}`} />
       </button>
@@ -60,6 +92,7 @@ const NetworkSwitcher = () => {
                 chainId === network.id ? 'font-medium' : ''
               }`}
               onClick={() => handleNetworkSwitch(network.id)}
+              disabled={isSwitching}
             >
               <div className="flex items-center gap-2">
                 <span>{network.icon}</span>

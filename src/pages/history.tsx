@@ -13,6 +13,7 @@ import {
   CheckCircle2,
   Equal,
   ExternalLink,
+  ArrowUpRight,
 } from 'lucide-react';
 import { formatEther } from 'viem';
 import { useAccount, useReadContract } from 'wagmi';
@@ -23,13 +24,14 @@ import { useRouter } from 'next/router';
 import { Game, GameHistoryCardProps } from '../types';
 import { userHasWallet } from '@civic/auth-web3';
 import { useUser } from '@civic/auth-web3/react';
+import NetworkSwitcher from '../components/NetworkSwitcher';
 
 
 const GameHistory = () => {
   const account = useAccount();
   const router = useRouter();
   const { abi, contractAddress } = useContractInfo();
-  const { tokenSymbol } = useNetworkInfo();
+  const { tokenSymbol, isMainnet, isTestnet, isSupportedNetwork } = useNetworkInfo();
   const userContext = useUser();
 
   // Get the user's address from Civic Auth if available, otherwise fallback to the wagmi account
@@ -62,7 +64,25 @@ const GameHistory = () => {
 
   return (
     <div className='space-y-4'>
-      <p className='text-white'>Game History</p>
+      <div className='flex items-center justify-between mb-4'>
+        <h1 className='text-xl font-bold text-white'>Battle History</h1>
+        <NetworkSwitcher />
+      </div>
+
+      {!isSupportedNetwork && (
+        <div className='bg-red-900/30 border border-red-800 rounded-lg p-4 mb-4 text-red-300'>
+          <p className='text-sm'>
+            Please switch to Core Mainnet or Testnet to view your battle history.
+          </p>
+        </div>
+      )}
+
+      {isSupportedNetwork && !gamesResult && (
+        <div className='flex justify-center py-8'>
+          <div className='animate-spin w-8 h-8 border-4 border-blue-500 border-t-transparent rounded-full'></div>
+        </div>
+      )}
+
       {gamesResult &&
         gamesResult.map((game) => (
           <GameHistoryCard
@@ -72,7 +92,7 @@ const GameHistory = () => {
             tokenSymbol={tokenSymbol}
           />
         ))}
-      {gamesResult && gamesResult.length < 1 && (
+      {isSupportedNetwork && gamesResult && gamesResult.length < 1 && (
         <div className='flex flex-col items-center justify-center p-8 text-center'>
           <div className='mb-4 rounded-full bg-gray-800/50 p-4'>
             <GamepadIcon className='h-8 w-8 text-gray-400' />
@@ -82,7 +102,7 @@ const GameHistory = () => {
           </h3>
           <Link
             href='/game'
-            className={`w-full py-4 rounded-lg font-semibold flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:opacity-90'
+            className={`w-full py-4 rounded-lg font-semibold flex items-center justify-center space-x-2 bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:opacity-90 hover:shadow-lg hover:shadow-blue-500/20 transform hover:-translate-y-1 transition-all duration-300'
               `}
           >
             <>
@@ -101,7 +121,8 @@ const GameHistory = () => {
 const GameHistoryCard:React.FC<GameHistoryCardProps> = ({ game, userAddress, tokenSymbol }) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const router = useRouter();
-
+  const { getAddressExplorerUrl, getTxExplorerUrl } = useNetworkInfo();
+  
   const formatAddress = (address: string) => {
     if (address === userAddress) return 'Me';
     if (address === '0x0000000000000000000000000000000000000000') return null;
@@ -301,7 +322,20 @@ const GameHistoryCard:React.FC<GameHistoryCardProps> = ({ game, userAddress, tok
                       <div className='text-sm text-slate-400'>
                         Player {index + 1}
                       </div>
-                      <div className='font-medium'>{formatAddress(player)}</div>
+                      <div className='flex items-center gap-1'>
+                        <div className='font-medium'>{formatAddress(player)}</div>
+                        {player !== '0x0000000000000000000000000000000000000000' && (
+                          <a 
+                            href={getAddressExplorerUrl(player)}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={(e) => e.stopPropagation()}
+                            className="text-blue-400 hover:text-blue-300 transition-colors"
+                          >
+                            <ArrowUpRight className="h-3.5 w-3.5" />
+                          </a>
+                        )}
+                      </div>
                     </div>
                   </div>
                   <div className='text-2xl font-bold'>{game.scores[index]}</div>
@@ -350,7 +384,7 @@ const GameHistoryCard:React.FC<GameHistoryCardProps> = ({ game, userAddress, tok
                           {getMoveIcon(opponentMove)}
                         </div>
                         <span className='text-xs'>
-                          {playerIndex && formatAddress(game.players[1 - playerIndex])}
+                          {playerIndex !== undefined && playerIndex >= 0 && formatAddress(game.players[1 - playerIndex])}
                         </span>
                       </div>
                     </div>

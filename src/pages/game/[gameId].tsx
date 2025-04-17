@@ -21,6 +21,7 @@ import {
   X,
   Equal,
   Play,
+  AlertTriangle,
 } from 'lucide-react';
 import {
   useAccount,
@@ -36,12 +37,13 @@ import toast from 'react-hot-toast';
 import Link from 'next/link';
 import { Game, MoveColor, MoveType } from '../../types';
 import { ErrorBoundary } from 'react-error-boundary';
+import NetworkSwitcher from '../../components/NetworkSwitcher';
 
 
 const GameInterface = () => {
   const [refreshData, setRefreshData] = useState('');
   const { abi, contractAddress } = useContractInfo();
-  const { tokenSymbol } = useNetworkInfo();
+  const { tokenSymbol, isSupportedNetwork, networkName } = useNetworkInfo();
 
   const router = useRouter();
   const account = useAccount();
@@ -107,6 +109,15 @@ const GameInterface = () => {
 
   const handleMakeMove = async () => {
     try {
+      // Check if network is supported
+      if (!isSupportedNetwork) {
+        toast.error(`Please connect to ${networkName} to play games`, {
+          icon: '⚠️',
+          duration: 3000,
+        });
+        return;
+      }
+      
       await writeContract({
         address: contractAddress,
         abi,
@@ -263,6 +274,15 @@ const GameInterface = () => {
 
   const handleMoveSelection = async (choice: MoveType) => {
     try {
+      // Check if network is supported
+      if (!isSupportedNetwork) {
+        toast.error(`Please connect to ${networkName} to make moves`, {
+          icon: '⚠️',
+          duration: 3000,
+        });
+        return;
+      }
+      
       const moveMapping = {
         Rock: 1,
         Paper: 2,
@@ -287,7 +307,7 @@ const GameInterface = () => {
     ) => (
       <button
         onClick={() => handleMoveSelection(moveName)}
-        disabled={!isPlayerTurn || isSubmitting}
+        disabled={!isPlayerTurn || isSubmitting || !isSupportedNetwork}
         className={`
         relative flex flex-col items-center justify-center p-6 rounded-xl
         ${
@@ -295,7 +315,7 @@ const GameInterface = () => {
             ? `${color.bg} ${color.text}`
             : 'bg-slate-800 hover:bg-slate-700'
         }
-        ${isPlayerTurn ? 'cursor-pointer' : 'opacity-50 cursor-not-allowed'}
+        ${isPlayerTurn && isSupportedNetwork ? 'cursor-pointer' : 'opacity-50 cursor-not-allowed'}
         transition-all duration-200 ease-out
         disabled:opacity-50 disabled:cursor-not-allowed
         group
@@ -479,21 +499,43 @@ const GameInterface = () => {
 
   return (
     <ErrorBoundary fallback={<div>Something went wrong</div>}>
-      <div className='flex flex-col items-center justify-center min-h-screen bg-slate-900 text-white p-4'>
-        <div className='w-full max-w-xl bg-slate-800/50 backdrop-blur-sm rounded-2xl shadow-xl p-6'>
-          {/* Header */}
-          <div className='text-center mb-8'>
-            <div className='flex items-center justify-center gap-3 mb-4'>
-              <div className={`p-2 rounded-lg ${gameType.bgColor}`}>
-                {gameType.icon}
-              </div>
-              <h1 className='text-2xl font-bold'>{gameType.name}</h1>
-            </div>
+      <div className='bg-slate-900 min-h-[calc(100vh-8rem)] text-white p-4'>
+        {/* Header with Network Switcher */}
+        <div className='flex justify-between items-center mb-4'>
+          <h1 className='text-xl font-bold text-white'>Battle Arena #{gameId}</h1>
+          <NetworkSwitcher />
+        </div>
 
-            <div className='flex justify-between items-center px-4 py-2 bg-slate-800 rounded-xl'>
-              <div className='flex items-center gap-2'>
-                <Trophy className='w-5 h-5 text-indigo-400' />
-                <span>Game #{Number(gameDetails?.gameId)}</span>
+        {/* Network Warning */}
+        {!isSupportedNetwork && (
+          <div className='bg-red-900/30 border border-red-800 rounded-lg p-4 mb-4 flex items-start gap-3'>
+            <AlertTriangle className='h-5 w-5 text-red-400 shrink-0 mt-0.5' />
+            <div className='text-sm text-red-300'>
+              <p className='font-medium'>Unsupported Network</p>
+              <p className='mt-1'>Please switch to Core Mainnet or Testnet to play this game.</p>
+            </div>
+          </div>
+        )}
+
+        <div className='max-w-2xl mx-auto bg-slate-800/50 p-6 rounded-2xl shadow-xl backdrop-blur-sm'>
+          {/* Header */}
+          <div className='mb-6'>
+            <div className='flex justify-between items-center mb-2'>
+              <div className='flex items-center gap-3'>
+                <div
+                  className={`p-3 rounded-lg ${gameType.bgColor} bg-opacity-20`}
+                >
+                  {gameType.icon}
+                </div>
+                <div>
+                  <h2 className='text-xl font-semibold text-white'>
+                    {gameType.name}
+                  </h2>
+                  <p className='text-sm text-slate-400'>
+                    First to {gameType.rounds}{' '}
+                    {gameType.rounds === 1 ? 'round' : 'rounds'}
+                  </p>
+                </div>
               </div>
               <div className='flex items-center gap-2'>
                 <Circle
@@ -520,7 +562,7 @@ const GameInterface = () => {
                     gameDetails: Game
                   ) => {
                     if (!address) return null;
-                    const playerIndex = gameDetails?.players.indexOf(address);
+                    const playerIndex = gameDetails?.players.indexOf(address as `0x${string}`);
                     return gameDetails?.scores[playerIndex] ?? null;
                   };
 
@@ -653,10 +695,10 @@ const GameInterface = () => {
               {playerMove && (
                 <button
                   onClick={handleMakeMove}
-                  disabled={pending}
+                  disabled={pending || !isSupportedNetwork}
                   className={`w-full py-4 rounded-lg font-semibold flex items-center justify-center space-x-2
                   ${
-                    !playerMove
+                    !playerMove || !isSupportedNetwork
                       ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
                       : 'bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:opacity-90'
                   }`}
