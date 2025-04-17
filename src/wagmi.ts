@@ -13,10 +13,18 @@ const coreTestnet = {
   },
   rpcUrls: {
     default: { 
-      http: ['https://rpc.test.btcs.network'] 
+      http: [
+        'https://rpc.test.btcs.network',
+        'https://1115.rpc.thirdweb.com',
+        'https://core-testnet.public.blastapi.io'
+      ] 
     },
     public: {
-      http: ['https://rpc.test.btcs.network']
+      http: [
+        'https://rpc.test.btcs.network',
+        'https://1115.rpc.thirdweb.com',
+        'https://core-testnet.public.blastapi.io'
+      ]
     }
   },
   blockExplorers: {
@@ -38,6 +46,12 @@ export const chains = [coreDao, coreTestnet] as const;
 
 // Export transports for both chains
 export const transports = {
-  [coreDao.id]: http('https://rpc.ankr.com/core'),
-  [coreTestnet.id]: http('https://rpc.test.btcs.network'),
+  [coreDao.id]: http('https://rpc.ankr.com/core', {
+    retryCount: 3,
+    timeout: 30_000
+  }),
+  [coreTestnet.id]: http('https://rpc.test.btcs.network', {
+    retryCount: 5,
+    timeout: 30_000
+  }),
 };
