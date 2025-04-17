@@ -24,14 +24,12 @@ import { useRouter } from 'next/router';
 import { Game, GameHistoryCardProps } from '../types';
 import { userHasWallet } from '@civic/auth-web3';
 import { useUser } from '@civic/auth-web3/react';
-import NetworkSwitcher from '../components/NetworkSwitcher';
-
 
 const GameHistory = () => {
   const account = useAccount();
   const router = useRouter();
   const { abi, contractAddress } = useContractInfo();
-  const { tokenSymbol, isMainnet, isTestnet, isSupportedNetwork } = useNetworkInfo();
+  const { tokenSymbol, isBaseSepoliaNetwork, isSupportedNetwork } = useNetworkInfo();
   const userContext = useUser();
 
   // Get the user's address from Civic Auth if available, otherwise fallback to the wagmi account
@@ -66,13 +64,12 @@ const GameHistory = () => {
     <div className='space-y-4'>
       <div className='flex items-center justify-between mb-4'>
         <h1 className='text-xl font-bold text-white'>Battle History</h1>
-        <NetworkSwitcher />
       </div>
 
       {!isSupportedNetwork && (
         <div className='bg-red-900/30 border border-red-800 rounded-lg p-4 mb-4 text-red-300'>
           <p className='text-sm'>
-            Please switch to Core Mainnet or Testnet to view your battle history.
+            Please connect to Base Sepolia to view your battle history.
           </p>
         </div>
       )}

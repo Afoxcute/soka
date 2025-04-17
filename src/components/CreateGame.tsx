@@ -11,8 +11,6 @@ import { extractErrorMessages } from '../utils';
 import { ErrorBoundary } from 'react-error-boundary';
 import { userHasWallet } from '@civic/auth-web3';
 import { useUser } from '@civic/auth-web3/react';
-import NetworkSwitcher from './NetworkSwitcher';
-
 
 const GAME_TYPES = [
   {
@@ -67,8 +65,6 @@ export default function CreateGame() {
     const [selectedType, setSelectedType] = useState(0);
     const [stakeAmount, setStakeAmount] = useState<string>('');
   
-
-
   const handleCreateGame = async () => {
     if (!stakeAmount) return;
 
@@ -151,16 +147,14 @@ export default function CreateGame() {
 
     const isLoading = isPending || isConfirming;
 
-
   return (
     <ErrorBoundary fallback={<div>Something went wrong</div>}>
       <div className='space-y-6 text-white'>
-        {/* Network Selector */}
+        {/* Section Header */}
         <div className='flex justify-between items-center mb-4'>
           <h2 className='text-lg font-semibold text-white'>
             Create Battle
           </h2>
-          <NetworkSwitcher />
         </div>
 
         {!isSupportedNetwork && (
@@ -168,7 +162,7 @@ export default function CreateGame() {
             <AlertTriangle className='h-5 w-5 text-red-400 shrink-0 mt-0.5' />
             <div className='text-sm text-red-300'>
               <p className='font-medium'>Unsupported Network</p>
-              <p className='mt-1'>Please switch to Core Mainnet or Testnet to create games.</p>
+              <p className='mt-1'>Please connect to Base Sepolia to create games.</p>
             </div>
           </div>
         )}

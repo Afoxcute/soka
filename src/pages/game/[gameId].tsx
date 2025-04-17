@@ -37,7 +37,6 @@ import toast from 'react-hot-toast';
 import Link from 'next/link';
 import { Game, MoveColor, MoveType } from '../../types';
 import { ErrorBoundary } from 'react-error-boundary';
-import NetworkSwitcher from '../../components/NetworkSwitcher';
 
 
 const GameInterface = () => {
@@ -541,7 +540,6 @@ const GameInterface = () => {
         {/* Header with Network Switcher */}
         <div className='flex justify-between items-center mb-4'>
           <h1 className='text-xl font-bold text-white'>Battle Arena #{gameId}</h1>
-          <NetworkSwitcher />
         </div>
 
         {/* Network Warning */}

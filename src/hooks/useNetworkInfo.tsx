@@ -1,9 +1,6 @@
 import { useChainId } from 'wagmi';
 import { useState, useEffect } from 'react';
-import { coreDao } from 'wagmi/chains';
-
-// Define Core Testnet chain ID
-const CORE_TESTNET_CHAIN_ID = 1115;
+import { baseSepolia } from 'wagmi/chains';
 
 export function useNetworkInfo() {
   const chainId = useChainId();
@@ -13,29 +10,16 @@ export function useNetworkInfo() {
     setIsMounted(true);
   }, []);
   
-  // Check if connected to Core Mainnet (id: 1116) or Core Testnet (id: 1115)
-  const isMainnet = isMounted && chainId === coreDao.id;
-  const isTestnet = isMounted && chainId === CORE_TESTNET_CHAIN_ID;
-  const isSupportedNetwork = isMainnet || isTestnet;
+  // Check if connected to Base Sepolia
+  const isBaseSepoliaNetwork = isMounted && chainId === baseSepolia.id;
+  const isSupportedNetwork = isBaseSepoliaNetwork;
   
-  // Determine network name based on chain ID
-  let networkName = "Unknown Network";
-  let networkClass = "bg-gray-900/50 text-gray-400";
-  let tokenSymbol = "CORE"; // Default symbol
-  let explorerUrl = "https://scan.coredao.org";
+  // Set network details
+  const networkName = "Base Sepolia";
+  const networkClass = "bg-blue-900/50 text-blue-400";
+  const tokenSymbol = "ETH"; // Base Sepolia uses ETH
+  const explorerUrl = "https://sepolia.basescan.org";
   
-  if (isMainnet) {
-    networkName = "Core Mainnet";
-    networkClass = "bg-green-900/50 text-green-400";
-    tokenSymbol = "CORE";
-    explorerUrl = "https://scan.coredao.org";
-  } else if (isTestnet) {
-    networkName = "Core Testnet";
-    networkClass = "bg-blue-900/50 text-blue-400";
-    tokenSymbol = "tCORE";
-    explorerUrl = "https://scan.test.btcs.network";
-  }
-
   const getAddressExplorerUrl = (address: string) => {
     return `${explorerUrl}/address/${address}`;
   };
@@ -46,8 +30,7 @@ export function useNetworkInfo() {
   
   return {
     chainId,
-    isMainnet,
-    isTestnet,
+    isBaseSepoliaNetwork,
     isSupportedNetwork,
     networkName,
     networkClass,
