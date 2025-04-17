@@ -9,11 +9,12 @@ import { useNetworkInfo } from '../hooks/useNetworkInfo';
 import Link from "next/link";
 import { Gamepad2, Wallet, Sword, Copy, ArrowLeftRight, Shield, Coins, Trophy, Users } from 'lucide-react';
 import Head from "next/head";
+import NetworkSwitcher from "../components/NetworkSwitcher";
 
 const Home: NextPage = () => {
     const { isConnected } = useAccount();
     const userContext = useUser();
-    const { tokenSymbol, isBaseSepoliaNetwork, networkName, networkClass } = useNetworkInfo();
+    const { tokenSymbol, isMainnet, isTestnet, networkName, networkClass } = useNetworkInfo();
 
     // Get the address from Civic wallet
     const address = userHasWallet(userContext) 
@@ -56,7 +57,7 @@ const Home: NextPage = () => {
               </span>
             </h1>
             <p className='text-gray-300 text-lg'>
-              Challenge opponents in the ultimate Rock-Paper-Scissors arena on Base Sepolia!
+              Challenge opponents in the ultimate Rock-Paper-Scissors arena on Core Network!
             </p>
           </div>
 
@@ -75,16 +76,14 @@ const Home: NextPage = () => {
                 </div>
               </div>
               
-              {/* Network Status */}
+              {/* Network Selector */}
               <div className='p-3 bg-gray-700/30 rounded-lg mb-4'>
                 <div className='flex justify-between items-center'>
                   <div className='flex items-center gap-2'>
                     <ArrowLeftRight className='h-4 w-4 text-gray-400' />
                     <span className='text-gray-300'>Network</span>
                   </div>
-                  <div className={`rounded-full px-2 py-1 text-xs ${networkClass}`}>
-                    {networkName}
-                  </div>
+                  <NetworkSwitcher />
                 </div>
               </div>
               
@@ -158,7 +157,7 @@ const Home: NextPage = () => {
 
           {/* Additional Info */}
           <div className='text-center text-gray-400 text-sm'>
-            <p>Powered by Base Sepolia | Battle with ⚔️ on the blockchain</p>
+            <p>Powered by Core Network | Battle with ⚔️ on the blockchain</p>
           </div>
         </div>
       </div>

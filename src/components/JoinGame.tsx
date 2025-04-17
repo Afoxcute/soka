@@ -22,6 +22,8 @@ import { Game } from '../types';
 import { ErrorBoundary } from 'react-error-boundary';
 import { userHasWallet } from '@civic/auth-web3';
 import { useUser } from '@civic/auth-web3/react';
+import NetworkSwitcher from './NetworkSwitcher';
+
 
 export default function JoinGame() {
       const { abi, contractAddress } = useContractInfo();
@@ -179,11 +181,12 @@ useEffect(() => {
   return (
     <ErrorBoundary fallback={<div>Something went wrong</div>}>
       <div className='space-y-6 text-white'>
-        {/* Section Header */}
+        {/* Network Selector */}
         <div className='flex justify-between items-center mb-4'>
           <h2 className='text-lg font-semibold text-white'>
             Join Battle
           </h2>
+          <NetworkSwitcher />
         </div>
 
         {!isSupportedNetwork && (
@@ -191,7 +194,7 @@ useEffect(() => {
             <AlertTriangle className='h-5 w-5 text-red-400 shrink-0 mt-0.5' />
             <div className='text-sm text-red-300'>
               <p className='font-medium'>Unsupported Network</p>
-              <p className='mt-1'>Please connect to Base Sepolia to join games.</p>
+              <p className='mt-1'>Please switch to Core Mainnet or Testnet to join games.</p>
             </div>
           </div>
         )}

@@ -13,6 +13,8 @@ import { useAutoConnect } from '@civic/auth-web3/wagmi';
 import { UserButton, useUser } from '@civic/auth-web3/react';
 import { useNetworkInfo } from '../hooks/useNetworkInfo';
 import WalletBalance from './WalletBalance';
+import NetworkSwitcher from './NetworkSwitcher';
+import NetworkStatus from './NetworkStatus';
 
 const NAV_ITEMS = [
   {
@@ -38,7 +40,8 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const router = useRouter();
   const { 
     chainId, 
-    isBaseSepoliaNetwork,
+    isMainnet,
+    isTestnet,
     isSupportedNetwork,
     networkName, 
     networkClass,
@@ -63,7 +66,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           id: 'network-change',
         });
       } else {
-        toast.error(`Connected to unsupported network. This app only supports Base Sepolia network.`, {
+        toast.error(`Connected to unsupported network. Please switch to Core Mainnet or Core Testnet.`, {
           icon: '⚠️',
           id: 'network-change',
           duration: 5000,
@@ -115,15 +118,13 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
               height={40}
               className='mr-2 animate-pulse hover:animate-spin'
             />
-            <span className="text-gradient font-bold text-lg">BASE BATTLE ARENA</span>
+            <span className="text-gradient font-bold text-lg">CORE BATTLE ARENA</span>
           </div>
           <div className="flex items-center gap-3">
             {isMounted && isConnected && (
               <>
-                {/* Network Status Label */}
-                <div className={`px-2 py-1 rounded-full text-xs ${networkClass}`}>
-                  {networkName}
-                </div>
+                <NetworkStatus compact={true} />
+                <NetworkSwitcher />
                 <WalletBalance />
                 {walletAddress && (
                   <a 

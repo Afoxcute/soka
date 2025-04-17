@@ -5,7 +5,8 @@ import { useChainId } from 'wagmi';
 import { useNetworkInfo } from '../hooks/useNetworkInfo';
 import { checkRpcConnection } from '../utils';
 import { ArrowLeftRight, Check, X, Loader2, RefreshCw } from 'lucide-react';
-import { baseSepolia } from 'wagmi/chains';
+import NetworkSwitcher from '../components/NetworkSwitcher';
+import NetworkStatus from '../components/NetworkStatus';
 
 const NetworkStatusPage = () => {
   const chainId = useChainId();
@@ -13,20 +14,32 @@ const NetworkStatusPage = () => {
   const [testResults, setTestResults] = useState<Record<string, { success: boolean; message: string; latency?: number }>>({});
   const [isRunningTests, setIsRunningTests] = useState(false);
 
-  // Base Sepolia RPC endpoints to test
-  const BASE_SEPOLIA_RPC_ENDPOINTS = [
-    'https://sepolia.base.org',
-    'https://base-sepolia-rpc.publicnode.com',
-    'https://1rpc.io/base-sepolia',
-    'https://base-sepolia.blockpi.network/v1/rpc/public'
-  ];
+  // Core DAO RPC endpoints to test
+  const RPC_ENDPOINTS = {
+    // Mainnet (1116)
+    '1116': [
+      'https://rpc.ankr.com/core',
+      'https://core.drpc.org',
+      'https://1rpc.io/core',
+      'https://core-rpc.publicnode.com',
+    ],
+    // Testnet (1115)
+    '1115': [
+      'https://rpc.test.btcs.network',
+      'https://1115.rpc.thirdweb.com',
+      'https://core-testnet.public.blastapi.io',
+      'https://chain-rpc.coredao.org/testnet'
+    ]
+  };
   
   const runDiagnostics = async () => {
     setIsRunningTests(true);
     const results: Record<string, { success: boolean; message: string; latency?: number }> = {};
     
+    const endpoints = RPC_ENDPOINTS[chainId.toString() as keyof typeof RPC_ENDPOINTS] || [];
+    
     // Test each endpoint
-    for (const endpoint of BASE_SEPOLIA_RPC_ENDPOINTS) {
+    for (const endpoint of endpoints) {
       try {
         const result = await checkRpcConnection(endpoint);
         results[endpoint] = result;
@@ -46,6 +59,7 @@ const NetworkStatusPage = () => {
     <div className="space-y-6 text-white">
       <div className="flex justify-between items-center mb-4">
         <h1 className="text-xl font-bold text-white">Network Status</h1>
+        <NetworkSwitcher />
       </div>
       
       <div className="bg-slate-800/50 rounded-lg border border-slate-700 p-5">
@@ -57,16 +71,8 @@ const NetworkStatusPage = () => {
               <p className="text-sm text-slate-400">Chain ID: {chainId}</p>
             </div>
           </div>
-          <div className={`px-3 py-1.5 rounded-full text-xs font-medium ${isSupportedNetwork ? 'bg-green-900/30 text-green-400' : 'bg-red-900/30 text-red-400'}`}>
-            {isSupportedNetwork ? networkName : 'Unsupported Network'}
-          </div>
+          <NetworkStatus />
         </div>
-        
-        {!isSupportedNetwork && (
-          <div className="mt-3 mb-6 p-3 bg-red-900/20 border border-red-800/50 rounded-lg text-sm text-red-300">
-            Please connect to Base Sepolia network (Chain ID: {baseSepolia.id}) to use this application.
-          </div>
-        )}
         
         <div className="mt-6">
           <button
@@ -143,7 +149,7 @@ const NetworkStatusPage = () => {
           </li>
           <li className="flex items-start gap-2">
             <span className="text-blue-400">•</span> 
-            <span>Make sure your wallet is configured to use Base Sepolia network</span>
+            <span>Try switching networks using the network selector in the header</span>
           </li>
           <li className="flex items-start gap-2">
             <span className="text-blue-400">•</span> 

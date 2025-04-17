@@ -10,6 +10,7 @@ import { userHasWallet } from '@civic/auth-web3';
 import { useRouter } from 'next/router';
 import toast from 'react-hot-toast';
 import { useNetworkInfo } from '../hooks/useNetworkInfo';
+import NetworkSwitcher from '../components/NetworkSwitcher';
 
 export default function GamePage() {
   const [activeTab, setActiveTab] = useState('create');
@@ -45,9 +46,10 @@ export default function GamePage() {
 
   return (
       <div className='space-y-6'>
-        {/* Header */}
+        {/* Header with Network Selector */}
         <div className='flex justify-between items-center mb-2'>
           <h1 className='text-xl font-bold text-white'>Battle Arena</h1>
+          <NetworkSwitcher />
         </div>
 
         {/* Network Warning */}
@@ -56,7 +58,7 @@ export default function GamePage() {
             <AlertTriangle className='h-5 w-5 text-red-400 shrink-0 mt-0.5' />
             <div className='text-sm text-red-300'>
               <p className='font-medium'>Unsupported Network</p>
-              <p className='mt-1'>Please connect to Base Sepolia to access battle features.</p>
+              <p className='mt-1'>Please switch to Core Mainnet or Testnet to access battle features.</p>
             </div>
           </div>
         )}
