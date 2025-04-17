@@ -14,6 +14,7 @@ import { UserButton, useUser } from '@civic/auth-web3/react';
 import { useNetworkInfo } from '../hooks/useNetworkInfo';
 import WalletBalance from './WalletBalance';
 import NetworkSwitcher from './NetworkSwitcher';
+import NetworkStatus from './NetworkStatus';
 
 const NAV_ITEMS = [
   {
@@ -122,6 +123,7 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
           <div className="flex items-center gap-3">
             {isMounted && isConnected && (
               <>
+                <NetworkStatus compact={true} />
                 <NetworkSwitcher />
                 <WalletBalance />
                 {walletAddress && (

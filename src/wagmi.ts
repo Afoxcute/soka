@@ -1,4 +1,4 @@
-import { http } from 'wagmi';
+import { http, fallback } from 'wagmi';
 import { coreDao } from "wagmi/chains";
 import type { Chain } from 'wagmi/chains';
 
@@ -44,14 +44,42 @@ const coreTestnet = {
 // Export both chains for wagmi configuration
 export const chains = [coreDao, coreTestnet] as const;
 
-// Export transports for both chains
+// Export transports for both chains with fallback mechanism
 export const transports = {
-  [coreDao.id]: http('https://rpc.ankr.com/core', {
-    retryCount: 3,
-    timeout: 30_000
-  }),
-  [coreTestnet.id]: http('https://rpc.test.btcs.network', {
-    retryCount: 5,
-    timeout: 30_000
-  }),
+  [coreDao.id]: fallback([
+    http('https://rpc.ankr.com/core', {
+      retryCount: 3,
+      timeout: 30_000
+    }),
+    http('https://core.drpc.org', {
+      retryCount: 3,
+      timeout: 30_000
+    }),
+    http('https://1rpc.io/core', {
+      retryCount: 3,
+      timeout: 30_000
+    }),
+    http('https://core-rpc.publicnode.com', {
+      retryCount: 3,
+      timeout: 30_000
+    })
+  ]),
+  [coreTestnet.id]: fallback([
+    http('https://rpc.test.btcs.network', {
+      retryCount: 3,
+      timeout: 30_000
+    }),
+    http('https://1115.rpc.thirdweb.com', {
+      retryCount: 3,
+      timeout: 30_000
+    }),
+    http('https://core-testnet.public.blastapi.io', {
+      retryCount: 3,
+      timeout: 30_000
+    }),
+    http('https://chain-rpc.coredao.org/testnet', {
+      retryCount: 3,
+      timeout: 30_000
+    })
+  ]),
 };
