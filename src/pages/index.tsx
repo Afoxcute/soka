@@ -7,13 +7,14 @@ import { UserButton, useUser } from '@civic/auth-web3/react';
 import { useNetworkInfo } from '../hooks/useNetworkInfo';
 
 import Link from "next/link";
-import { Gamepad2, Wallet, Sword, Copy, Shield, Coins, Trophy, Users } from 'lucide-react';
+import { Gamepad2, Wallet, Sword, Copy, ArrowLeftRight, Shield, Coins, Trophy, Users } from 'lucide-react';
 import Head from "next/head";
+import NetworkSwitcher from "../components/NetworkSwitcher";
 
 const Home: NextPage = () => {
     const { isConnected } = useAccount();
     const userContext = useUser();
-    const { tokenSymbol } = useNetworkInfo();
+    const { tokenSymbol, isMainnet, isTestnet, networkName, networkClass } = useNetworkInfo();
 
     // Get the address from Civic wallet
     const address = userHasWallet(userContext) 
@@ -63,13 +64,26 @@ const Home: NextPage = () => {
           {/* Display Wallet Info if connected */}
           {isConnected && userHasWallet(userContext) && (
             <div className='bg-gray-800 p-5 rounded-lg border border-gray-700 hover:border-blue-500 transition-all duration-300'>
-              <div className='flex justify-between items-center mb-3'>
+              <div className='flex justify-between items-center mb-4'>
                 <h2 className='text-lg font-semibold text-white flex items-center'>
                   <Wallet className='w-5 h-5 mr-2 text-blue-400' />
                   Your Wallet
                 </h2>
-                <div className='text-xs px-2 py-1 rounded-full bg-blue-900/50 text-blue-400'>
-                  Civic Auth
+                <div className='flex items-center gap-2'>
+                  <div className='text-xs px-2 py-1 rounded-full bg-blue-900/50 text-blue-400'>
+                    Civic Auth
+                  </div>
+                </div>
+              </div>
+              
+              {/* Network Selector */}
+              <div className='p-3 bg-gray-700/30 rounded-lg mb-4'>
+                <div className='flex justify-between items-center'>
+                  <div className='flex items-center gap-2'>
+                    <ArrowLeftRight className='h-4 w-4 text-gray-400' />
+                    <span className='text-gray-300'>Network</span>
+                  </div>
+                  <NetworkSwitcher />
                 </div>
               </div>
               
