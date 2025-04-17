@@ -41,28 +41,31 @@ const GAME_TYPES = [
 export default function CreateGame() {
     const { abi, contractAddress } = useContractInfo();
     const { tokenSymbol, isSupportedNetwork, networkName } = useNetworkInfo();
-    const { data: hash, error, isPending, writeContract } = useWriteContract();
+    const { data: hash, error, isPending, writeContractAsync, writeContract } = useWriteContract();
     const userContext = useUser();
 
-          useWatchContractEvent({
-            address: contractAddress,
-            abi,
-            eventName: 'GameCreated',
-            onLogs(logs: any) {
-              const createdGameID = logs && logs[0]?.args?.gameId
-                    toast.success(`Game of ID ${createdGameID} created`, {
-                      duration: 3000,
-                    });
-            },
-          });
-    
-      const { isLoading: isConfirming, isSuccess: isConfirmed } =
-        useWaitForTransactionReceipt({
-          hash,
+    // Watch for GameCreated events
+    useWatchContractEvent({
+      address: contractAddress,
+      abi,
+      eventName: 'GameCreated',
+      onLogs(logs: any) {
+        const createdGameID = logs && logs[0]?.args?.gameId
+        toast.success(`Game of ID ${createdGameID} created`, {
+          duration: 3000,
         });
+        console.log("Game created event:", logs);
+      },
+    });
+    
+    // Track transaction confirmation status
+    const { isLoading: isConfirming, isSuccess: isConfirmed } =
+      useWaitForTransactionReceipt({
+        hash,
+      });
         
-  const [selectedType, setSelectedType] = useState(0);
-  const [stakeAmount, setStakeAmount] = useState<string>('');
+    const [selectedType, setSelectedType] = useState(0);
+    const [stakeAmount, setStakeAmount] = useState<string>('');
   
 
 
@@ -92,13 +95,16 @@ export default function CreateGame() {
     });
 
     try {
-      await writeContract({
+      // Use writeContractAsync for better error handling with async/await
+      const txHash = await writeContractAsync({
         address: contractAddress,
         abi,
         functionName: 'createGame',
         args: [BigInt(selectedType)],
         value: parseEther(stakeAmount),
       });
+
+      console.log("Transaction sent:", txHash);
 
       // Update loading toast when transaction is sent
       toast.loading('Summoning your battle on the blockchain...', {
@@ -107,15 +113,16 @@ export default function CreateGame() {
         duration: 3000,
       });
     } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : 'Battle creation failed',
-        {
-          id: toastId,
-          duration: 3000,
-          icon: '❌',
-        }
-      );
       console.error('Error creating game:', err);
+      
+      // Show a more user-friendly error message
+      const errorMessage = err instanceof Error ? extractErrorMessages(err.message) : 'Battle creation failed';
+      
+      toast.error(errorMessage, {
+        id: toastId,
+        duration: 3000,
+        icon: '❌',
+      });
     }
   };
 
@@ -124,6 +131,11 @@ export default function CreateGame() {
         // Reset form
         setSelectedType(0);
         setStakeAmount('');
+        
+        toast.success('Battle created successfully! 🎮', {
+          duration: 3000,
+          icon: '🔥',
+        });
       }
     }, [isConfirmed]);
 
@@ -133,8 +145,7 @@ export default function CreateGame() {
           duration: 3000,
           icon: '❌',
         });
-        console.log(error);
-        
+        console.log("Transaction error:", error);
       }
     }, [error]);
 

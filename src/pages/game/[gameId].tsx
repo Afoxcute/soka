@@ -47,7 +47,7 @@ const GameInterface = () => {
 
   const router = useRouter();
   const account = useAccount();
-  const { data: hash, error, isPending, writeContract } = useWriteContract();
+  const { data: hash, error, isPending, writeContract, writeContractAsync } = useWriteContract();
 
   const { isLoading: isConfirming, isSuccess: isConfirmed } =
     useWaitForTransactionReceipt({
@@ -83,6 +83,8 @@ const GameInterface = () => {
                                  });
                                }
                 }
+                
+                console.log("Player moved event:", logs);
               },
             });
 
@@ -94,6 +96,7 @@ const GameInterface = () => {
               onLogs(logs: any) {
                 if (logs) {
                   setRefreshData(Date.now().toString());
+                  console.log("Game joined event:", logs);
                 }
               },
             });
@@ -108,24 +111,59 @@ const GameInterface = () => {
   const gameEnded = !gameDetails?.isActive && gameDetails?.roundsPlayed > 0;
 
   const handleMakeMove = async () => {
+    if (!playerMove) {
+      toast.error('Please select a move first', {
+        duration: 2000,
+      });
+      return;
+    }
+    
+    // Show loading toast
+    const toastId = toast.loading('Sending your move to the blockchain...', {
+      duration: 5000,
+    });
+    
+    setIsSubmitting(true);
+    
     try {
       // Check if network is supported
       if (!isSupportedNetwork) {
         toast.error(`Please connect to ${networkName} to play games`, {
+          id: toastId,
           icon: '⚠️',
           duration: 3000,
         });
         return;
       }
       
-      await writeContract({
+      // Use writeContractAsync for better async/await pattern
+      const txHash = await writeContractAsync({
         address: contractAddress,
         abi,
         functionName: 'makeMove',
         args: [BigInt(proofedGamedId), playerMove],
       });
+      
+      console.log("Move transaction sent:", txHash);
+      
+      toast.loading('Waiting for your move to be confirmed...', {
+        id: toastId,
+        duration: 10000,
+      });
     } catch (error) {
-      console.log(error);
+      console.error("Error making move:", error);
+      
+      // Extract and display user-friendly error
+      const errorMessage = error instanceof Error 
+        ? extractErrorMessages(error.message) 
+        : 'Failed to submit your move';
+        
+      toast.error(errorMessage, {
+        id: toastId,
+        duration: 3000,
+      });
+    } finally {
+      setIsSubmitting(false);
     }
   };
 

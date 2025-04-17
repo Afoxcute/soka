@@ -33,6 +33,7 @@ export default function JoinGame() {
         error,
         isPending,
         writeContract,
+        writeContractAsync
       } = useWriteContract();
       const { isLoading: isConfirming, isSuccess: isConfirmed } =
         useWaitForTransactionReceipt({
@@ -114,30 +115,44 @@ export default function JoinGame() {
       return;
     }
 
+    if (!id || !stake) {
+      toast.error('Invalid game or stake amount', {
+        duration: 3000,
+      });
+      return;
+    }
+
     const toastId = toast.loading('Preparing to enter the battle arena...',)
     try {
-      await writeContract({
+      // Use writeContractAsync instead for better async/await pattern
+      const txHash = await writeContractAsync({
         address: contractAddress,
         abi,
         functionName: 'joinGame',
         args: [id],
-        value: (stake),
+        value: stake,
       });
+      
+      console.log("Join game transaction sent:", txHash);
+      
       toast.loading('Summoning your warrior to the battlefield...', {
         id: toastId,
         icon: '⚔️',
         duration: 3000,
       });
     } catch (err) {
-      toast.error(
-        err instanceof Error ? err.message : 'Failed to join battle',
-        {
-          id: toastId,
-          duration: 3000,
-          icon: '❌',
-        }
-      );
       console.error('Error joining game:', err);
+      
+      // Extract and format the error message
+      const errorMessage = err instanceof Error 
+        ? extractErrorMessages(err.message) 
+        : 'Failed to join battle';
+      
+      toast.error(errorMessage, {
+        id: toastId,
+        duration: 3000,
+        icon: '❌',
+      });
     }
   }
 
@@ -159,7 +174,7 @@ useEffect(() => {
               duration: 3000,
               icon: '❌',
             });
-            console.log(error);
+            console.log("Transaction error:", error);
           }
         }, [error]);
 
