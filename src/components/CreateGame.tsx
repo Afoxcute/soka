@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState } from 'react';
-import { Trophy, Coins, Swords, Timer, Info, AlertTriangle } from 'lucide-react';
+import { Trophy, Coins, Swords, Timer, Info } from 'lucide-react';
 import { parseEther } from 'viem';
 import { useWriteContract, useWaitForTransactionReceipt, useWatchContractEvent } from 'wagmi';
 import { useContractInfo } from '../hooks/useContractInfo';
@@ -11,7 +11,6 @@ import { extractErrorMessages } from '../utils';
 import { ErrorBoundary } from 'react-error-boundary';
 import { userHasWallet } from '@civic/auth-web3';
 import { useUser } from '@civic/auth-web3/react';
-import NetworkSwitcher from './NetworkSwitcher';
 
 
 const GAME_TYPES = [
@@ -40,46 +39,34 @@ const GAME_TYPES = [
 
 export default function CreateGame() {
     const { abi, contractAddress } = useContractInfo();
-    const { tokenSymbol, isSupportedNetwork, networkName } = useNetworkInfo();
-    const { data: hash, error, isPending, writeContractAsync, writeContract } = useWriteContract();
+    const { tokenSymbol } = useNetworkInfo();
+    const { data: hash, error, isPending, writeContract } = useWriteContract();
     const userContext = useUser();
 
-    // Watch for GameCreated events
-    useWatchContractEvent({
-      address: contractAddress,
-      abi,
-      eventName: 'GameCreated',
-      onLogs(logs: any) {
-        const createdGameID = logs && logs[0]?.args?.gameId
-        toast.success(`Game of ID ${createdGameID} created`, {
-          duration: 3000,
-        });
-        console.log("Game created event:", logs);
-      },
-    });
+          useWatchContractEvent({
+            address: contractAddress,
+            abi,
+            eventName: 'GameCreated',
+            onLogs(logs: any) {
+              const createdGameID = logs && logs[0]?.args?.gameId
+                    toast.success(`Game of ID ${createdGameID} created`, {
+                      duration: 3000,
+                    });
+            },
+          });
     
-    // Track transaction confirmation status
-    const { isLoading: isConfirming, isSuccess: isConfirmed } =
-      useWaitForTransactionReceipt({
-        hash,
-      });
+      const { isLoading: isConfirming, isSuccess: isConfirmed } =
+        useWaitForTransactionReceipt({
+          hash,
+        });
         
-    const [selectedType, setSelectedType] = useState(0);
-    const [stakeAmount, setStakeAmount] = useState<string>('');
+  const [selectedType, setSelectedType] = useState(0);
+  const [stakeAmount, setStakeAmount] = useState<string>('');
   
 
 
   const handleCreateGame = async () => {
     if (!stakeAmount) return;
-
-    // Check if network is supported
-    if (!isSupportedNetwork) {
-      toast.error(`Please connect to ${networkName} to create games`, {
-        icon: '⚠️',
-        duration: 3000,
-      });
-      return;
-    }
 
     // Check if user has a wallet
     if (!userContext.user || !userHasWallet(userContext)) {
@@ -95,16 +82,13 @@ export default function CreateGame() {
     });
 
     try {
-      // Use writeContractAsync for better error handling with async/await
-      const txHash = await writeContractAsync({
+      await writeContract({
         address: contractAddress,
         abi,
         functionName: 'createGame',
         args: [BigInt(selectedType)],
         value: parseEther(stakeAmount),
       });
-
-      console.log("Transaction sent:", txHash);
 
       // Update loading toast when transaction is sent
       toast.loading('Summoning your battle on the blockchain...', {
@@ -113,16 +97,15 @@ export default function CreateGame() {
         duration: 3000,
       });
     } catch (err) {
+      toast.error(
+        err instanceof Error ? err.message : 'Battle creation failed',
+        {
+          id: toastId,
+          duration: 3000,
+          icon: '❌',
+        }
+      );
       console.error('Error creating game:', err);
-      
-      // Show a more user-friendly error message
-      const errorMessage = err instanceof Error ? extractErrorMessages(err.message) : 'Battle creation failed';
-      
-      toast.error(errorMessage, {
-        id: toastId,
-        duration: 3000,
-        icon: '❌',
-      });
     }
   };
 
@@ -131,11 +114,6 @@ export default function CreateGame() {
         // Reset form
         setSelectedType(0);
         setStakeAmount('');
-        
-        toast.success('Battle created successfully! 🎮', {
-          duration: 3000,
-          icon: '🔥',
-        });
       }
     }, [isConfirmed]);
 
@@ -145,7 +123,8 @@ export default function CreateGame() {
           duration: 3000,
           icon: '❌',
         });
-        console.log("Transaction error:", error);
+        console.log(error);
+        
       }
     }, [error]);
 
@@ -155,24 +134,6 @@ export default function CreateGame() {
   return (
     <ErrorBoundary fallback={<div>Something went wrong</div>}>
       <div className='space-y-6 text-white'>
-        {/* Network Selector */}
-        <div className='flex justify-between items-center mb-4'>
-          <h2 className='text-lg font-semibold text-white'>
-            Create Battle
-          </h2>
-          <NetworkSwitcher />
-        </div>
-
-        {!isSupportedNetwork && (
-          <div className='bg-red-900/30 border border-red-800 rounded-lg p-4 mb-4 flex items-start gap-3'>
-            <AlertTriangle className='h-5 w-5 text-red-400 shrink-0 mt-0.5' />
-            <div className='text-sm text-red-300'>
-              <p className='font-medium'>Unsupported Network</p>
-              <p className='mt-1'>Please switch to Core Mainnet or Testnet to create games.</p>
-            </div>
-          </div>
-        )}
-
         {/* Game Type Selection */}
         <div className='space-y-4'>
           <h2 className='text-xl font-semibold text-gray-200 flex items-center'>
@@ -187,9 +148,7 @@ export default function CreateGame() {
                 <button
                   key={type.id}
                   onClick={() => setSelectedType(type.id)}
-                  disabled={!isSupportedNetwork}
                   className={`flex items-center p-4 rounded-lg border-2 transition-all duration-200 ${
-                    !isSupportedNetwork ? 'opacity-60 cursor-not-allowed border-gray-700 bg-gray-800' :
                     isSelected
                       ? 'border-blue-500 bg-blue-500/10 transform scale-105 shadow-lg shadow-blue-500/20'
                       : 'border-gray-700 bg-gray-800 hover:border-gray-600 hover:transform hover:scale-102'
@@ -197,13 +156,11 @@ export default function CreateGame() {
                 >
                   <div
                     className={`p-2 rounded-lg ${
-                      !isSupportedNetwork ? 'bg-gray-700' : 
                       isSelected ? 'bg-blue-500/20' : 'bg-gray-700'
                     }`}
                   >
                     <Icon
                       className={`w-6 h-6 ${
-                        !isSupportedNetwork ? 'text-gray-400' :
                         isSelected ? 'text-blue-400 animate-pulse' : 'text-gray-400'
                       }`}
                     />
@@ -237,9 +194,8 @@ export default function CreateGame() {
               min='0'
               value={stakeAmount}
               onChange={(e) => setStakeAmount(e.target.value)}
-              disabled={!isSupportedNetwork}
               placeholder={`Enter ${tokenSymbol} amount`}
-              className={`w-full pl-10 pr-16 py-3 bg-gray-800 border-2 border-gray-700 rounded-lg focus:outline-none ${isSupportedNetwork ? 'focus:border-blue-500' : ''} transition-colors text-white ${!isSupportedNetwork ? 'opacity-60 cursor-not-allowed' : ''}`}
+              className='w-full pl-10 pr-16 py-3 bg-gray-800 border-2 border-gray-700 rounded-lg focus:outline-none focus:border-blue-500 transition-colors text-white'
             />
             <div className='absolute inset-y-0 right-0 pr-3 flex items-center pointer-events-none'>
               <span className='text-yellow-400'>{tokenSymbol}</span>
@@ -254,10 +210,10 @@ export default function CreateGame() {
         {/* Create Game Button */}
         <button
           onClick={handleCreateGame}
-          disabled={!stakeAmount || isLoading || !isSupportedNetwork}
+          disabled={!stakeAmount || isLoading}
           className={`w-full py-4 rounded-lg font-semibold flex items-center justify-center space-x-2
           ${
-            !stakeAmount || !isSupportedNetwork
+            !stakeAmount
               ? 'bg-gray-700 text-gray-400 cursor-not-allowed'
               : 'bg-gradient-to-r from-blue-500 to-purple-500 text-white hover:opacity-90 hover:shadow-lg hover:shadow-blue-500/20 transform hover:-translate-y-1 transition-all duration-300'
           }

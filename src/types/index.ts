@@ -1,25 +1,16 @@
 // Define the type for the game object
 export interface Game {
-  gameId: bigint;
-  players: [`0x${string}`, `0x${string}`];
-  stake: bigint;
-  isActive: boolean;
-  winner: `0x${string}`;
+  choices: number[];
+  gameId: bigint; 
   gameType: number;
-  roundsToWin: number;
-  roundsPlayed: number;
+  isActive: boolean;
+  lastPlayerMove: string;
   player1Moves: number[];
   player2Moves: number[];
-  player1Score: number;
-  player2Score: number;
+  players: string[];
+  roundsPlayed: number;
   scores: number[];
-  winner1: boolean;
-  winner2: boolean;
-  lastPlayerMove: string;
-  choices: number[];
-  roundResolvedAt: bigint;
-  roundStartedAt: bigint;
-  timeout: bigint;
+  stake: bigint; 
 }
 
 export interface GameSearchCardProps {
