@@ -1,5 +1,5 @@
 // Base Sepolia contract information
-export const contractAddress = "0xYourContractAddressHere"; // Replace with your actual contract address on Base Sepolia
+export const contractAddress = "0xC97384DE52e31Cc4EBE22e06139e36Bd7F01211D"; // Replace with your actual contract address on Base Sepolia
 
 // Contract ABI
 export const abi = [
