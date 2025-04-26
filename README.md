@@ -1,6 +1,6 @@
-# Rock-Paper-Scissors on CoreDao
+# Rock-Paper-Scissors on Base Sepolia
 
-This is a decentralized Rock-Paper-Scissors game built on the CoreDao network. The application allows users to create and join games, track their move history, and view past game results, all while ensuring transparency and fairness through blockchain technology.
+This is a decentralized Rock-Paper-Scissors game built on the Base Sepolia network. The application allows users to create and join games, track their move history, and view past game results, all while ensuring transparency and fairness through blockchain technology.
 
 ## Table of Contents
 
@@ -35,7 +35,7 @@ To get started with the project, follow these steps:
 
 - **Home Page**: Provides an overview of the game and a button to navigate to the game tab.
 - **Game Tab**: 
-  - **Create Game**: Users can create a game by selecting the game type (Lightning Duel, Warrior Clash, Epic Announcement) and setting a stake in Core DAO.
+  - **Create Game**: Users can create a game by selecting the game type (Lightning Duel, Warrior Clash, Epic Announcement) and setting a stake in ETH.
   - **Join Game**: Users can search for existing games using a game ID and join if there is an available slot.
 - **Real-Time Gameplay**: Players are notified of their opponent's moves, and results are displayed only after both players have made their moves.
 - **History Tab**: Users can view their past games and move history for transparency.
@@ -44,9 +44,9 @@ To get started with the project, follow these steps:
 
 The application is structured as follows:
 
-- **Frontend**: Built with Next.js, utilizing React for the UI and Wagmi for CoreDao interactions.
+- **Frontend**: Built with Next.js, utilizing React for the UI and Wagmi for Base Sepolia interactions.
 - **Smart Contracts**: The game logic is implemented in Solidity, ensuring secure and transparent gameplay.
-- **Blockchain**: All game states and transactions are recorded on the CoreDao network.
+- **Blockchain**: All game states and transactions are recorded on the Base Sepolia network.
 
 ### Key Components
 
