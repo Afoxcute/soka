@@ -1,3 +1,5 @@
+// Base Sepolia contract information
+// Contract address: https://sepolia.basescan.org/address/0xc97384de52e31cc4ebe22e06139e36bd7f01211d
 export const contractAddress = '0xC97384DE52e31Cc4EBE22e06139e36Bd7F01211D';
 
 export const abi = 
