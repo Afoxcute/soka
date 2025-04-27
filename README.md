@@ -5,7 +5,7 @@ This is a decentralized Rock-Paper-Scissors game built on the Base Sepolia netwo
 ## Smart Contract
 
 The game's smart contract is deployed on Base Sepolia and can be viewed at:
-[@https://sepolia.basescan.org/address/0xc97384de52e31cc4ebe22e06139e36bd7f01211d](https://sepolia.basescan.org/address/0xc97384de52e31cc4ebe22e06139e36bd7f01211d)
+[https://sepolia.basescan.org/address/0xc97384de52e31cc4ebe22e06139e36bd7f01211d](https://sepolia.basescan.org/address/0xc97384de52e31cc4ebe22e06139e36bd7f01211d)
 
 ## Table of Contents
 
@@ -159,12 +159,32 @@ The application is configured to work exclusively with Base Sepolia network:
 
 ### Environment Setup
 
-Create a `.env.local` file with required environment variables:
+The project uses environment variables for configuration. Three files are provided:
 
-```
-NEXT_PUBLIC_CONTRACT_ADDRESS=0xc97384de52e31cc4ebe22e06139e36bd7f01211d
-NEXT_PUBLIC_CIVIC_CLIENT_ID=3fb12e4d-dde9-48d3-b510-62783dae555a
-```
+1. `.env.example` - Template file with placeholder values
+2. `.env.local` - For local development (ignored by git)
+3. `.env` - For production environment (ignored by git)
+
+To set up your environment:
+
+1. Copy `.env.example` to `.env.local` for local development:
+   ```bash
+   cp .env.example .env.local
+   ```
+
+2. Fill in your own values in `.env.local`:
+   ```
+   NEXT_PUBLIC_CONTRACT_ADDRESS=0xYourContractAddressHere
+   NEXT_PUBLIC_BASE_SEPOLIA_RPC_URL=https://sepolia.base.org
+   NEXT_PUBLIC_CIVIC_CLIENT_ID=your-civic-client-id-here
+   NEXT_PUBLIC_NETWORK_ID=84532
+   NEXT_PUBLIC_APP_NAME=Base Battle Arena
+   ```
+
+Required environment variables:
+- `NEXT_PUBLIC_CONTRACT_ADDRESS`: Address of the game smart contract on Base Sepolia
+- `NEXT_PUBLIC_CIVIC_CLIENT_ID`: Client ID for Civic Auth authentication
+- `NEXT_PUBLIC_BASE_SEPOLIA_RPC_URL`: RPC URL for Base Sepolia network
 
 
 
