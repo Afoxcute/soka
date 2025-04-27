@@ -124,7 +124,7 @@ const Home: NextPage = () => {
                 <Coins className='w-6 h-6 text-yellow-400 animate-pulse' />
                 <h2 className='text-xl font-semibold text-white'>Stake {tokenSymbol}</h2>
               </div>
-              <p className='text-gray-400'>Bet your {tokenSymbol} tokens and win big in thrilling battles!</p>
+              <p className='text-gray-400'>Wager your {tokenSymbol} tokens and win big in thrilling battles!</p>
             </div>
 
             <div className='bg-gray-800 p-4 rounded-lg border border-gray-700 hover:border-purple-500 transition-all duration-300 hover:shadow-lg hover:shadow-purple-500/20 hover:-translate-y-1'>
