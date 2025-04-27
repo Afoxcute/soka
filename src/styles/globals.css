@@ -37,3 +37,99 @@ a {
 .animate-fadeIn {
   animation: fadeIn 0.2s ease-out forwards;
 }
+
+/* Custom styles for User Button */
+:root {
+  --civic-button-background: linear-gradient(to right, #3b82f6, #8b5cf6);
+  --civic-button-border: 2px solid rgba(255, 255, 255, 0.2);
+  --civic-button-shadow: 0 4px 10px rgba(59, 130, 246, 0.5);
+}
+
+/* Apply custom styles to Civic Auth user button */
+div[data-testid="civic-login-button"],
+div[data-testid="civic-wallet-menu-button"],
+div[data-testid="civic-login-button"] button,
+div[data-testid="civic-wallet-menu-button"] button {
+  background: var(--civic-button-background) !important;
+  border: var(--civic-button-border) !important;
+  box-shadow: var(--civic-button-shadow) !important;
+  border-radius: 8px !important;
+  transition: transform 0.2s, box-shadow 0.2s !important;
+}
+
+div[data-testid="civic-login-button"]:hover,
+div[data-testid="civic-wallet-menu-button"]:hover,
+div[data-testid="civic-login-button"] button:hover,
+div[data-testid="civic-wallet-menu-button"] button:hover {
+  transform: translateY(-2px) !important;
+  box-shadow: 0 6px 15px rgba(59, 130, 246, 0.6) !important;
+}
+
+/* Wrapper for user button in header */
+.user-button-wrapper {
+  position: relative;
+  padding: 2px;
+  border-radius: 8px;
+  background: linear-gradient(to right, #3b82f6, #8b5cf6);
+  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+  transition: all 0.3s ease;
+}
+
+.user-button-wrapper:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(59, 130, 246, 0.6);
+}
+
+/* Add a subtle animation to the button */
+.user-button-wrapper::after {
+  content: '';
+  position: absolute;
+  top: -2px;
+  left: -2px;
+  right: -2px;
+  bottom: -2px;
+  background: linear-gradient(45deg, #3b82f6, #8b5cf6, #3b82f6);
+  border-radius: 10px;
+  z-index: -1;
+  animation: border-animation 2s linear infinite;
+  opacity: 0.7;
+}
+
+@keyframes border-animation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+/* Add styles for the large user button on index page */
+.user-button-large {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.user-button-large div[data-testid="civic-login-button"],
+.user-button-large div[data-testid="civic-login-button"] button {
+  width: 100% !important;
+  padding: 12px !important;
+  display: flex !important;
+  justify-content: center !important;
+  background: rgba(255, 255, 255, 0.1) !important;
+  border: 1px solid rgba(255, 255, 255, 0.2) !important;
+  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1) !important;
+  font-weight: 600 !important;
+  font-size: 16px !important;
+  color: white !important;
+}
+
+.user-button-large div[data-testid="civic-login-button"]:hover,
+.user-button-large div[data-testid="civic-login-button"] button:hover {
+  background: rgba(255, 255, 255, 0.15) !important;
+}

@@ -114,7 +114,9 @@ const Layout: React.FC<{ children: React.ReactNode }> = ({ children }) => {
                 <WalletBalance />
               </>
             )}
-            <UserButton />
+            <div className="user-button-wrapper">
+              <UserButton />
+            </div>
           </div>
         </div>
       </header>

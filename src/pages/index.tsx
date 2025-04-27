@@ -141,10 +141,10 @@ const Home: NextPage = () => {
             {!isConnected ? (
               <div className='flex flex-col items-center'>
                 <p className='text-gray-400 mb-4'>Log in with Civic to start playing</p>
-                <div className='bg-gradient-to-r from-blue-600 to-purple-600 p-1.5 rounded-lg w-full hover:opacity-95 transition-all duration-300 hover:shadow-xl hover:shadow-blue-500/50 transform hover:-translate-y-1'>
-                  <UserButton 
-                    className='w-full flex items-center justify-center p-4 font-bold text-white bg-gradient-to-r from-blue-500/90 to-purple-500/90 rounded-md hover:from-blue-400 hover:to-purple-400' 
-                  />
+                <div className='bg-gradient-to-r from-blue-500 to-purple-500 p-1 rounded-lg w-full hover:opacity-90 transition-all duration-300 hover:shadow-lg hover:shadow-blue-500/50 transform hover:-translate-y-1'>
+                  <div className="user-button-large">
+                    <UserButton className='w-full flex items-center justify-center p-3 font-semibold' />
+                  </div>
                 </div>
               </div>
             ) : (
