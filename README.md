@@ -162,8 +162,8 @@ The application is configured to work exclusively with Base Sepolia network:
 The project uses environment variables for configuration. Three files are provided:
 
 1. `.env.example` - Template file with placeholder values
-2. `.env.local` - For local development (ignored by git)
-3. `.env` - For production environment (ignored by git)
+2. `.env.local` - For local development
+3. `.env` - For production environment
 
 To set up your environment:
 

@@ -27,12 +27,11 @@ const wagmiConfig = createConfig({
   ],
 });
 
-function MyApp({ Component, pageProps }: AppProps) {
+function App({ Component, pageProps }: AppProps) {
   return (
     <QueryClientProvider client={queryClient}>
       <WagmiProvider config={wagmiConfig}>
       <CivicAuthProvider clientId={civicClientId} initialChain={chains[0]}>
-
           <Toaster position='top-right' reverseOrder={false} />
           <Layout>
             <Component {...pageProps} />
@@ -43,4 +42,4 @@ function MyApp({ Component, pageProps }: AppProps) {
   );
 }
 
-export default MyApp;
+export default App;
