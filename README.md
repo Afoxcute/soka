@@ -2,6 +2,10 @@
 
 This is a decentralized Rock-Paper-Scissors game built on the Base Sepolia network. The application allows users to create and join games, track their move history, and view past game results, all while ensuring transparency and fairness through blockchain technology.
 
+
+Tweet link: https://x.com/Jwafo_tweet/status/1917743720113258496
+
+
 ## Smart Contract
 
 The game's smart contract is deployed on Base Sepolia and can be viewed at:
